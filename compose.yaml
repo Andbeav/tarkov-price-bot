@@ -1,0 +1,12 @@
+services:
+  app:
+    image: tarkov-price-bot
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    working_dir: /app
+    env_file:
+      - .env
+    command: python bot.py
