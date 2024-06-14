@@ -1,3 +1,4 @@
+#!/usr/local/bin/python
 from os import environ
 
 ACCESS_TOKEN = environ['ACCESS_TOKEN']
@@ -30,30 +31,38 @@ async def fetchItemData(item_name):
     return data[0]
 
 # twitchio
-
 from twitchio.ext import commands
 
-class Bot(commands.Bot):
-    def __init__(self):
-        super().__init__(token=ACCESS_TOKEN, prefix=COMMAND_PREFIX, initial_channels=[CHANNEL_NAME])
+class OnReadyCog(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
 
-    async def event_ready(self):
-        print(f'Logged in as | {self.nick}')
-        print(f'User id is | {self.user_id}')
+    @commands.Cog.event("event_ready")
+    async def on_ready(self):
+        print(f'Logged in as | {self.bot.nick}')
+        print(f'User id is | {self.bot.user_id}')
 
-    async def event_message(self, message):
-        if message.echo: return
-        await self.handle_commands(message)
+class PriceCog(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
 
     @commands.command()
     async def p(self, ctx: commands.Context):
+        print(ctx.author.name, ctx.message.content)
         item_name = ctx.message.content.removeprefix('%sp ' % COMMAND_PREFIX)
         item_data = await fetchItemData(item_name)
-        if item_data == False:
-            await ctx.send(f'Unable to fetch price of {item_name}.')
-        else:
-            await ctx.send(f'The last low price of {item_data['normalizedName']} was {item_data['lastLowPrice']} roubles.')
 
+        message = f'Unable to fetch price of {item_name}.'
+        if item_data != False:
+            message = f'The last low price of {item_data['normalizedName']} was {item_data['lastLowPrice']} roubles.'
+        print(message)
+        await ctx.reply(message)
 
-bot = Bot()
+bot = commands.Bot(
+    token=ACCESS_TOKEN,
+    prefix=COMMAND_PREFIX,
+    initial_channels=[CHANNEL_NAME]
+)
+bot.add_cog(OnReadyCog(bot))
+bot.add_cog(PriceCog(bot))
 bot.run()

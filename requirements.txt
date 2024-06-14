@@ -1,2 +1,2 @@
 gql[all]
-twitchio
+twitchio==2.9.1
