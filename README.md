@@ -13,7 +13,7 @@ Fill in the missing config in the `.env` file.
 Run using podman (or docker) compose:
 
 ```shell
-$ podman-compose up --build app # --build not nescessary after first run
+$ podman-compose up --build app # --build not necessary after first run
 ...
 Logged in as | <auth-token-user>
 User id is | <auth-token-user-id>
